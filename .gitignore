@@ -1,0 +1,15 @@
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfvars
+crash.log
+# Personal study notes — ignored everywhere in project
+**/DNS-RESOURCES.md
+**/TGW_RESOURCES.md
+**/FLOW-LOGS-RESOURCES.md
+**/explanation.md
+**/dns_module_overview.md
+**/dns-resources-explained.md
+**/FLOW-LOGS-RESOURCES.md
+**/iam_role_explanation.md
+**/readme.me
