@@ -12,4 +12,6 @@ crash.log
 **/dns-resources-explained.md
 **/FLOW-LOGS-RESOURCES.md
 **/iam_role_explanation.md
-**/readme.me
+**/readme.meoverride.tf
+override.tf.json
+.terraformrc

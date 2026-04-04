@@ -1,0 +1,9 @@
+1. Create a role using resource "aws_iam_role". Inside the resource you s
+point assume_role_policy to data "aws_iam_policy_document", which is the trust
+policy. This will tell the role that it is assuming whichever services that 
+are fetch by the data block.
+2. Create data "aws_iam_policy_document" fetching the service that will
+be used by the role
+3. create the permission policy with the block data "aws_iam_policy_document"
+4. create resource "aws_iam_role_policy" that which attach permission policy
+to the role
