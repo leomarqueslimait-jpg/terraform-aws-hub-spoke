@@ -114,7 +114,7 @@ See [modules/vpc/DECISIONS.md](modules/vpc/DECISIONS.md) for notes on key design
 ### Route 53 Private Hosted Zone — DNS records for all three instances
 ![Route 53 Hosted Zone](images/Route53_hostedzones.png)
 
-### Security Groups — Bastion SSH restricted to single IP, spoke instances allow Hub VPC only
+### Security Groups — Bastion SSH restricted to single IP, spoke instances allow Hub VPC onlyy
 ![Security Groups](images/Security_groupd.png)
 
 ### Transit Gateway — Hub-spoke TGW available and connected
