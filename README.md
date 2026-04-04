@@ -94,6 +94,37 @@ See [modules/vpc/DECISIONS.md](modules/vpc/DECISIONS.md) for notes on key design
 
 ---
 
+## Deployment Evidence
+
+### CloudWatch Log Groups — VPC Flow Logs for all three VPCs
+![CloudWatch Log Groups](images/Cloudwatch_loggroups.png)
+
+### CloudWatch Log Streams — Active ENI flow log entries in Hub VPC
+![CloudWatch Log Streams](images/Cloudwatch_loggroups_2.png)
+
+### EC2 Instances — Bastion in Hub public subnet, App instances in private spoke subnets
+![EC2 Instances](images/Instances.png)
+
+### NAT Gateway — Centralized internet egress in Hub VPC public subnet
+![NAT Gateway](images/NAT.png)
+
+### Hub Private Route Table — All four routes active (local, NAT, spoke-dev via TGW, spoke-prod via TGW)
+![Route Tables](images/Route_tables.png)
+
+### Route 53 Private Hosted Zone — DNS records for all three instances
+![Route 53 Hosted Zone](images/Route53_hostedzones.png)
+
+### Security Groups — Bastion SSH restricted to single IP, spoke instances allow Hub VPC only
+![Security Groups](images/Security_groupd.png)
+
+### Transit Gateway — Hub-spoke TGW available and connected
+![Transit Gateway](images/TGW.png)
+
+### DNS Resolution — nslookup resolving all three hostnames from bastion across VPCs
+![DNS Resolution](images/DNS_resolution.png)
+
+---
+
 ## Prerequisites
 
 - AWS CLI configured with appropriate credentials
