@@ -1,0 +1,30 @@
+# Copy to terraform.tfvars and fill in your own values before running
+# terraform apply here. This file (bootstrap/terraform.tfvars.example) is
+# safe to commit; terraform.tfvars itself should stay out of git — it's
+# already covered by the *.tfvars rule in .gitignore.
+#
+# None of these variables have defaults in variables.tf on purpose — every
+# value bootstrap needs lives here, in one file, instead of being split
+# between variables.tf defaults and this file.
+#
+# The values below are placeholders, not real ones — bucket names are
+# globally unique in S3, so you can't reuse someone else's verbatim anyway.
+
+aws_region        = "us-east-1"
+state_bucket_name = "your-org-tf-state-bucket"
+lock_table_name   = "tf-state-lock"
+github_org        = "your-github-username"
+github_repo       = "your-repo-name"
+
+# GitHub's documented thumbprint for token.actions.githubusercontent.com.
+# AWS validates the OIDC provider's full certificate chain itself; this
+# value is required by the aws_iam_openid_connect_provider resource but
+# isn't actually used by AWS to verify trust. This one's the same for every
+# GitHub Actions OIDC setup, not specific to you — safe to leave as-is.
+github_oidc_thumbprint = "6938fd4d98bab03faadb97b34396831e3780aea1"
+
+tags = {
+  Project   = "hub-spoke-network"
+  ManagedBy = "Terraform"
+  Layer     = "bootstrap"
+}

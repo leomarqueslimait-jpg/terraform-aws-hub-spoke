@@ -1,0 +1,40 @@
+name: hub
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "envs/hub/**"
+      - "modules/vpc/**"
+      - "modules/tgw/**"
+      - "modules/dns/**"
+      - "modules/flow_logs/**"
+      - ".github/workflows/hub.yml"
+      - ".github/workflows/_terraform-reusable.yml"
+  push:
+    branches: [main]
+    paths:
+      - "envs/hub/**"
+      - "modules/vpc/**"
+      - "modules/tgw/**"
+      - "modules/dns/**"
+      - "modules/flow_logs/**"
+      - ".github/workflows/hub.yml"
+      - ".github/workflows/_terraform-reusable.yml"
+
+jobs:
+  terraform:
+    uses: ./.github/workflows/_terraform-reusable.yml
+    permissions:
+      id-token: write # required for OIDC
+      contents: read
+      pull-requests: write # required to post the plan as a PR comment
+    with:
+      environment: hub
+      working_directory: envs/hub
+      role_arn: ${{ vars.HUB_DEPLOY_ROLE_ARN }}
+    # HUB_DEPLOY_ROLE_ARN comes from bootstrap's `deploy_role_arns["hub"]`
+    # output. Set it under Settings > Secrets and variables > Actions >
+    # Variables (repository variable, not a secret — an IAM role ARN isn't
+    # sensitive on its own; the OIDC trust policy is what actually gates
+    # who can assume it).

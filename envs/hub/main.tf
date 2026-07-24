@@ -83,6 +83,7 @@ module "dns" {
 
 }
 
+#So bastian can access spoke vpcs
 resource "aws_route" "public_to_spokes" {
   count = length(var.spoke_cidrs)
 

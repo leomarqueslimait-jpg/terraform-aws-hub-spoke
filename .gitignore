@@ -3,6 +3,14 @@
 .terraform/
 *.tfvars
 crash.log
+
+# Terraform plan output — can contain the same sensitive state contents as
+# .tfstate. Added once the bootstrap layer made local `terraform plan -out=`
+# runs a normal part of the workflow (every other env applies straight
+# through an S3 backend, so this wasn't a risk before).
+*.tfplan
+tfplan
+
 # Personal study notes — ignored everywhere in project
 **/DNS-RESOURCES.md
 **/TGW_RESOURCES.md
