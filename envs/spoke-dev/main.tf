@@ -44,7 +44,7 @@ so I could use the /32 bastion IP, which would be more control over traffic, but
 data.terraform_remote_state.hub.outputs.bastion_sg_id, however, both methods creates
 circular dependency. Bastion lives in the Hub module, so we would need that running 
 to extract the bastion ip, but Hub needs spokes vpc running first to extract spoke VPC IDs.
-so I decided to go with bastion /24 subnet 
+so I decided to go with bastion /24 subnet.
 */
     cidr_blocks = ["10.0.0.0/24"]
   }
