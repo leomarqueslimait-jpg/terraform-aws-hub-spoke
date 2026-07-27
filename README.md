@@ -265,7 +265,7 @@ Then, in your GitHub repo:
 
 After that, every environment's `providers.tf` backend block (bucket `hub-spoke-tf-state-new`, table `tf-state-lock`, region `us-east-1` by default) already matches what `bootstrap` created — no further edits needed unless you changed the names in your `terraform.tfvars`.
 
----
+----
 
 ## Deployment
 
