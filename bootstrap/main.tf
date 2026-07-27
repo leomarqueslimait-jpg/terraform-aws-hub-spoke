@@ -90,6 +90,14 @@ resource "aws_dynamodb_table" "tf_lock" {
 # No long-lived AWS access keys stored in GitHub secrets. GitHub issues a
 # short-lived OIDC token per workflow run, and each IAM role below trusts
 # that token instead of a static credential.
+#
+# This is a `resource`, imported once via
+# bootstrap/import-existing-resources.sh, not a `data` source — kept
+# consistent with the S3 bucket and DynamoDB table below, which are also
+# resource + import. An AWS account can only have one OIDC provider per
+# issuer URL (it's account-wide, not per-project), so if you've already set
+# one up for another project, import it here rather than letting apply try
+# to create a duplicate.
 # ---------------------------------------------------------------------------
 
 resource "aws_iam_openid_connect_provider" "github" {
@@ -149,11 +157,11 @@ resource "aws_iam_role" "deploy" {
 }
 
 # --- Backend access: state file + lock table -------------------------------
-# Each role gets full read/write on its own state object only. Hub also
-# gets read-only access to the spoke state objects, because
-# envs/hub/main.tf reads them through terraform_remote_state to build the
-# TGW attachments and DNS associations. Spokes never read anyone else's
-# state, so they don't get this extra grant.
+# Each role gets full read/write on its own state object only. Hub's
+# read-only access to the two spoke state objects lives in the hub_only
+# document below instead of here, since that's exactly what hub_only is
+# for — anything only hub needs, kept out of the document shared by all
+# three roles.
 # The lock table itself is shared and not scoped per role — see the
 # Design Decisions note in the README for why that's an accepted
 # simplification here rather than per-item conditions.
@@ -179,22 +187,6 @@ data "aws_iam_policy_document" "backend_access" {
       "s3:ListBucket",
     ]
     resources = [aws_s3_bucket.tf_state.arn]
-  }
-
-  # Only the hub role gets this extra statement.
-  dynamic "statement" {
-    for_each = each.key == "hub" ? [1] : []
-    content {
-      sid    = "ReadSpokeStateForRemoteState"
-      effect = "Allow"
-      actions = [
-        "s3:GetObject",
-      ]
-      resources = [
-        "${aws_s3_bucket.tf_state.arn}/spoke-dev/terraform.tfstate",
-        "${aws_s3_bucket.tf_state.arn}/spoke-prod/terraform.tfstate",
-      ]
-    }
   }
 
   statement {
@@ -281,12 +273,28 @@ resource "aws_iam_role_policy" "network_common" {
   policy = data.aws_iam_policy_document.network_common.json
 }
 
-# --- Hub-only access: TGW, Route 53, CloudWatch Logs, flow-logs IAM role ---
+# --- Hub-only access: TGW, Route 53, CloudWatch Logs, flow-logs IAM role, ---
+# --- and read-only access to the two spoke state objects -------------------
 # Only envs/hub calls modules/tgw, modules/dns, and modules/flow_logs, so
-# only the hub role gets these permissions. Spoke-dev and spoke-prod never
-# touch a Transit Gateway, a hosted zone, or a log group directly.
+# only the hub role gets those permissions. Spoke-dev and spoke-prod never
+# touch a Transit Gateway, a hosted zone, or a log group directly. Only hub
+# reads the spoke state files too, since envs/hub/main.tf is the only place
+# using terraform_remote_state to reach them (for the TGW attachments and
+# DNS associations) — spokes never read anyone else's state.
 
 data "aws_iam_policy_document" "hub_only" {
+  statement {
+    sid    = "ReadSpokeStateForRemoteState"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+    ]
+    resources = [
+      "${aws_s3_bucket.tf_state.arn}/spoke-dev/terraform.tfstate",
+      "${aws_s3_bucket.tf_state.arn}/spoke-prod/terraform.tfstate",
+    ]
+  }
+
   statement {
     sid    = "TransitGateway"
     effect = "Allow"

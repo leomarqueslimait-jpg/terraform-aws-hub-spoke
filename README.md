@@ -170,7 +170,13 @@ Each environment's GitHub Actions workflow assumes its own IAM role — `gha-hub
 
 ### OIDC instead of long-lived AWS access keys
 
-The alternative to OIDC here would be generating an IAM user access key and pasting it into a GitHub secret for each environment. That works, but it's a static credential that doesn't expire, and if it ever leaks it's valid until someone manually rotates it. With OIDC, `bootstrap` creates one GitHub OIDC provider and each IAM role's trust policy checks the token GitHub issues for that specific workflow run — which repo it came from, and whether it was a pull request or a push to `main`. There's no credential sitting in GitHub at all; AWS is trusting a signed claim about the workflow run itself, and that trust is scoped per environment through the three separate roles.
+The alternative to OIDC here would be generating an IAM user access key and pasting it into a GitHub secret for each environment. That works, but it's a static credential that doesn't expire, and if it ever leaks it's valid until someone manually rotates it. With OIDC, each IAM role's trust policy checks the token GitHub issues for that specific workflow run — which repo it came from, and whether it was a pull request or a push to `main`. There's no credential sitting in GitHub at all; AWS is trusting a signed claim about the workflow run itself, and that trust is scoped per environment through the three separate roles.
+
+### Resource + import for the OIDC provider, not a data source
+
+The GitHub OIDC provider, the S3 state bucket, and the DynamoDB lock table are all handled the same way in `bootstrap`: `resource` blocks, imported once via `bootstrap/import-existing-resources.sh`, rather than created fresh. I considered making the OIDC provider a `data` source instead, since it's genuinely different from the other two — an AWS account can only register one OIDC provider per issuer URL, so it's shared account-wide across every project I have, not dedicated to just this one the way the bucket and lock table are.
+
+A `data` source would have been the safer choice in one specific sense: it's read-only by definition, so it can never show up in a `terraform destroy` plan, meaning this project could never accidentally take down a provider that other, unrelated projects in the same account also trust. I went with `resource` + `import` anyway, to keep all three "this already exists in AWS" cases handled identically — one script, one mental model, instead of two different patterns depending on which resource type it is. The tradeoff I'm accepting is that a careless `terraform destroy` on this bootstrap layer could, in theory, delete a provider my other projects depend on. If this project ever left "portfolio" status and became something I run destroy on casually, I'd revisit this and either add `prevent_destroy` here too or switch it to a `data` source.
 
 ### Apply gated by manual approval, and why it re-plans instead of reusing the PR's plan
 
@@ -235,6 +241,14 @@ cp terraform.tfvars.example terraform.tfvars
 # edit terraform.tfvars with your own bucket name, GitHub org/repo, etc.
 
 terraform init
+
+# If your state bucket/lock table already exist (created by hand before
+# this bootstrap layer did), import them first instead of letting apply
+# try to create duplicates:
+chmod +x import-existing-resources.sh
+./import-existing-resources.sh
+
+terraform plan   # review before applying, especially on a first import
 terraform apply
 ```
 

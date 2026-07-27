@@ -35,3 +35,4 @@ variable "tags" {
   description = "Common tags applied to all bootstrap resources"
   type        = map(string)
 }
+

@@ -3,6 +3,7 @@
 .terraform/
 *.tfvars
 crash.log
+import.tf
 
 # Terraform plan output — can contain the same sensitive state contents as
 # .tfstate. Added once the bootstrap layer made local `terraform plan -out=`
