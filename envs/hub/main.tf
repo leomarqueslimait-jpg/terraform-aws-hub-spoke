@@ -4,6 +4,12 @@ locals {
     ManagedBy   = "Terraform"
     Environment = "hub"
   }
+
+  # Single source of truth for "which spokes exist." Adding a third spoke
+  # means adding one string here — the remote state lookup, the TGW
+  # attachment, the flow logs VPC list, the DNS zone association, and the
+  # app.<env>.internal.example.com record all pick it up automatically.
+  spoke_envs = toset(["dev", "prod"])
 }
 
 module "hub_vpc" {
@@ -23,29 +29,27 @@ module "tgw" {
   source = "../../modules/tgw"
   name   = "hub-spoke"
 
-  attachments = {
-    hub = {
-      vpc_id     = module.hub_vpc.vpc_id
-      subnet_ids = module.hub_vpc.private_subnet_ids
+ 
+  attachments = merge(
+    {
+      hub = {
+        vpc_id     = module.hub_vpc.vpc_id
+        subnet_ids = module.hub_vpc.private_subnet_ids
+      }
+    },
+    {
+      for env, state in data.terraform_remote_state.spokes : env => {
+        vpc_id     = state.outputs.vpc_id
+        subnet_ids = state.outputs.private_subnet_ids
+      }
     }
+  )
 
-    dev = {
-      vpc_id     = data.terraform_remote_state.spoke_dev.outputs.vpc_id
-      subnet_ids = data.terraform_remote_state.spoke_dev.outputs.private_subnet_ids
-    }
-
-    prod = {
-      vpc_id     = data.terraform_remote_state.spoke_prod.outputs.vpc_id
-      subnet_ids = data.terraform_remote_state.spoke_prod.outputs.private_subnet_ids
-    }
-
-  }
-  spoke_cidrs                = ["10.1.0.0/16", "10.2.0.0/16"]
+  spoke_cidrs                = [for env, state in data.data.terraform_remote_state.spokes : state.output.vpc_cidr]
   hub_private_route_table_id = module.hub_vpc.private_route_table_id
 
   spoke_route_table_ids = {
-    dev  = data.terraform_remote_state.spoke_dev.outputs.private_route_table_id
-    prod = data.terraform_remote_state.spoke_prod.outputs.private_route_table_id
+    for env, state in data.terraform_remote_state.spokes : env => state.outputs.private_route_table_id
   }
 
   tags = local.common_tags
@@ -55,11 +59,10 @@ module "tgw" {
 module "flow_logs" {
   source = "../../modules/flow_logs"
 
-  vpc_ids = {
-    hub  = module.hub_vpc.vpc_id
-    prod = data.terraform_remote_state.spoke_prod.outputs.vpc_id
-    dev  = data.terraform_remote_state.spoke_dev.outputs.vpc_id
-  }
+  vpc_ids = merge(
+    { hub = module.hub_vpc.vpc_id },
+    { for env, state in data.terraform_remote_state.spokes : env => state.outputs.vpc_id }
+  )
 
   retention_days = 7
   tags           = local.common_tags
@@ -73,10 +76,7 @@ module "dns" {
   hub_vpc_id  = module.hub_vpc.vpc_id
 
   spoke_vpc_ids = {
-    dev  = data.terraform_remote_state.spoke_dev.outputs.vpc_id
-    prod = data.terraform_remote_state.spoke_prod.outputs.vpc_id
-
-
+    for env, state in data.terraform_remote_state.spokes : env => state.outputs.vpc_id
   }
 
   tags = local.common_tags
@@ -98,20 +98,13 @@ resource "aws_route" "hub_private_to_nat" {
   nat_gateway_id         = module.hub_vpc.nat_gateway_id
 }
 
-data "terraform_remote_state" "spoke_dev" {
-  backend = "s3"
-  config = {
-    bucket = "hub-spoke-tf-state-new"
-    key    = "spoke-dev/terraform.tfstate"
-    region = "us-east-1"
-  }
-}
+data "terraform_remote_state" "spokes" {
+  for_each = local.spoke_envs
 
-data "terraform_remote_state" "spoke_prod" {
   backend = "s3"
   config = {
     bucket = "hub-spoke-tf-state-new"
-    key    = "spoke-prod/terraform.tfstate"
+    key    = "spoke-${each.key}/terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -125,20 +118,30 @@ resource "aws_route53_record" "bastion" {
   records = [aws_instance.bastion.private_ip]
 }
 
-resource "aws_route53_record" "spoke_dev" {
+resource "aws_route53_record" "spokes" {
+  for_each = data.terraform_remote_state.spokes
+
   zone_id = module.dns.private_zone_id
-  name    = "app.dev.internal.example.com"
+  name    = "app.${each.key}.internal.example.com"
   type    = "A"
   ttl     = 300
-  records = [data.terraform_remote_state.spoke_dev.outputs.app_private_ip]
+  records = [each.value.outputs.app_private_ip]
 }
 
-resource "aws_route53_record" "spoke_prod" {
-  zone_id = module.dns.private_zone_id
-  name    = "app.prod.internal.example.com"
-  type    = "A"
-  ttl     = 300
-  records = [data.terraform_remote_state.spoke_prod.outputs.app_private_ip]
+# aws_route53_record.spoke_dev and aws_route53_record.spoke_prod used to be
+# two hand-written resources. They became aws_route53_record.spokes["dev"]
+# and ["prod"] above — same records, new addresses. Without these `moved`
+# blocks, Terraform would see the old addresses missing from config and the
+# new ones as unrelated, and plan to destroy + recreate both DNS records
+# instead of recognizing they're the same resources that just moved.
+moved {
+  from = aws_route53_record.spoke_dev
+  to   = aws_route53_record.spokes["dev"]
+}
+
+moved {
+  from = aws_route53_record.spoke_prod
+  to   = aws_route53_record.spokes["prod"]
 }
 
 resource "aws_security_group" "bastion" {

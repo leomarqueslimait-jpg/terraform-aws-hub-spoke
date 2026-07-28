@@ -66,19 +66,9 @@ This project implements a hub-and-spoke network architecture on AWS using Terraf
 
 ## Skills Learned
 
-### Terraform
-
-I learned how to use multi-environment deployment. Each environment has a separate state file in an S3 bucket. We create a backend block where Terraform stores the state files. We can reference resources and attributes from other modules and environments using these state files. To access data from another environment you need to not only pass a backend block in each environment, but also pass a data block containing a backend attribute referencing the state file you want to access.
-
-### AWS and Networking
-
-Creating defense in depth with VPCs that have only private subnets, only being able to communicate with each other via Transit Gateway in the Hub VPC. The spoke VPCs are completely private and can only be accessed via the bastion in the Hub VPC. I also learned how to deploy a Transit Gateway — route tables in each VPC are not enough. You also have to create route tables, associations, and the desired propagations in the TGW itself, as well as attachments.
-
-It was also great creating a private Route 53 hosted zone and seeing instances in different VPCs being able to communicate with each other using an A record instead of an IP address.
-
-### IAM and Access
-
-I added an instance profile module (`modules/ssm_instance_role`) so I could reach the bastion and both app instances through AWS Systems Manager Session Manager, not just SSH. This meant learning that a role isn't enough on its own — you have to wrap it in an instance profile before EC2 can actually use it, and only then does the instance get real, temporary credentials behind the scenes when it calls `sts:AssumeRole`. Attaching the AWS-managed `AmazonSSMManagedInstanceCore` policy was the easy part; understanding why that role/profile split exists took more digging than I expected.
+- Multi-environment Terraform with isolated state per environment (S3 backend, one state file each) and explicit cross-environment reads via `terraform_remote_state` where hub needs spoke outputs.
+- Transit Gateway routing beyond the default VPC route table — attachments, TGW-level route tables, associations, and propagations, deliberately disabling the default association/propagation behavior to enforce spoke isolation.
+- IAM role/instance-profile separation for SSM Session Manager access (`modules/ssm_instance_role`), alongside a traditional SSH bastion.
 
 ---
 
@@ -140,6 +130,10 @@ I used TGW anyway because peering doesn't scale the way this architecture needed
 
 TGW solves this by acting like a router in the middle. Every VPC attaches to it once, and the TGW route tables decide who can reach who. In this project, the Hub VPC's NAT Gateway and bastion are exactly the kind of shared services that spoke VPCs need to reach without being directly peered to each other, so TGW was the right call architecturally even at a higher hourly cost. For a simpler 2-VPC setup with no shared services in the middle, I'd use peering instead.
 
+### Looping `terraform_remote_state` with `for_each` instead of one data block per spoke
+
+Refactored per-spoke lookups — the `terraform_remote_state` data source, TGW attachments, the flow logs VPC list, and the `app.<env>.internal.example.com` DNS records — from hand-written blocks per environment into a single `for_each` over one `local.spoke_envs` set. Adding a third spoke now means adding one string instead of touching five separate blocks by hand, which is exactly the kind of manual step that got missed with the DNS records the first time through. Hub's own entries (it isn't a spoke) stay wired directly to `module.hub_vpc`'s outputs and get merged in alongside the loop, since hub can't read its own state back through `terraform_remote_state` mid-apply. Renaming the existing `aws_route53_record` resources to their new `for_each` addresses used `moved` blocks, so `terraform plan` showed the rename as a no-op instead of a destroy/recreate.
+
 ### Bastion + SSM Session Manager — keeping both on purpose
 
 I built this project with a traditional SSH bastion first, then added AWS Systems Manager Session Manager as a second way in, instead of replacing the bastion outright. AWS's own guidance leans toward SSM now — no open inbound port, no SSH key to lose or rotate, and every session gets logged to CloudTrail for free. I actually lost my own bastion key pair partway through building this and had to replace it, which made the case for SSM pretty concrete in a way no blog post could.
@@ -148,29 +142,9 @@ But I kept the bastion and its supporting network path on purpose. It's the piec
 
 So both paths run side by side on the same instances: SSH through the bastion (`modules/vpc`, `modules/tgw`, the hand-built routes in `envs/hub/main.tf`) to show the networking, and SSM through an instance profile (`modules/ssm_instance_role`) to show I also know the direction AWS is actually pushing production access toward. Same instances, two different ways in, each one demonstrating a different skill.
 
-### Dropping the GitHub OIDC provider from state instead of destroying it
+### Removing the DynamoDB lock table with a `removed` block
 
-This project used to run a GitHub Actions pipeline authenticated via a GitHub OIDC provider and three per-environment deploy roles, all created in `bootstrap`. Simplifying the project meant removing the pipeline, which made those roles genuinely dead — nothing left to assume them. The three `gha-*-deploy-role` roles were project-scoped, so they were safe to delete with a normal `terraform apply` after removing them from config.
-
-The OIDC provider was a different case. AWS only allows one OIDC provider per issuer URL per account, and this one was shared with another project in the same AWS account. Letting `terraform apply` destroy it would have deleted it out from under that other project too. Instead I ran `terraform state rm aws_iam_openid_connect_provider.github` before removing the resource block — that drops it from this project's state without touching AWS, so this project simply stops managing something it never solely owned. It's a good example of why `terraform destroy` and "delete the resource block" aren't always the same operation once a resource is shared across more than one Terraform state.
-
-### Removing the DynamoDB lock table with a `removed` block instead of `terraform state rm`
-
-`bootstrap` originally created a DynamoDB table for state locking, back when that was the only way to lock an S3 backend. Terraform later added `use_lockfile`, a native S3 locking mechanism that writes a lock object directly in the state bucket instead of a separate table. Every environment's backend block sets `use_lockfile = true` and none of them ever set `dynamodb_table`, which meant the table had been sitting there unused since I made that switch — created, tagged, costing nothing on the pay-per-request billing mode, but doing no actual work.
-
-I stopped managing it with a `removed` block instead of running `terraform state rm aws_dynamodb_table.tf_lock` from the command line:
-
-```hcl
-removed {
-  from = aws_dynamodb_table.tf_lock
-
-  lifecycle {
-    destroy = false
-  }
-}
-```
-
-Functionally this does the same thing as `state rm` — the resource leaves Terraform's state and AWS is untouched (`destroy = false`). The difference is `removed` is declarative and lives in version control, so `terraform plan` shows exactly what's about to happen before anything is applied, and the intent is documented in the codebase instead of only existing as a command someone ran once in a terminal. `state rm` is still the right tool for a quick one-off; `removed` is the better fit here since it's part of the same "simplify the project" change as the OIDC cleanup above, reviewed the same way as everything else in this repo.
+`bootstrap` originally created a DynamoDB table for state locking, since superseded by S3-native locking (`use_lockfile = true` in every `providers.tf`), which left the table created but unused. Removed it with a `removed` block (`destroy = false`) instead of `terraform state rm`, so the removal showed up in `terraform plan` before being applied, rather than only existing as a command run once in a terminal.
 
 ---
 
