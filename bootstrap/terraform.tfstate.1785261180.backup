@@ -1,0 +1,1263 @@
+{
+  "version": 4,
+  "terraform_version": "1.15.8",
+  "serial": 22,
+  "lineage": "a485d99c-b592-b7aa-8013-8217457fdb0c",
+  "outputs": {
+    "deploy_role_arns": {
+      "value": {
+        "hub": "arn:aws:iam::300272448172:role/gha-hub-deploy-role",
+        "spoke-dev": "arn:aws:iam::300272448172:role/gha-spoke-dev-deploy-role",
+        "spoke-prod": "arn:aws:iam::300272448172:role/gha-spoke-prod-deploy-role"
+      },
+      "type": [
+        "object",
+        {
+          "hub": "string",
+          "spoke-dev": "string",
+          "spoke-prod": "string"
+        }
+      ]
+    },
+    "github_oidc_provider_arn": {
+      "value": "arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com",
+      "type": "string"
+    },
+    "lock_table_name": {
+      "value": "tf-state-lock",
+      "type": "string"
+    },
+    "state_bucket_name": {
+      "value": "hub-spoke-tf-state-new",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "data",
+      "type": "aws_caller_identity",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "300272448172",
+            "arn": "arn:aws:iam::300272448172:user/iamadmin",
+            "id": "300272448172",
+            "user_id": "AIDAUL2NB6KWF32XZDPBT"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "assume_role",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "hub",
+          "schema_version": 0,
+          "attributes": {
+            "id": "1908939356",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRoleWithWebIdentity\",\n      \"Principal\": {\n        \"Federated\": \"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"\n      },\n      \"Condition\": {\n        \"StringEquals\": {\n          \"token.actions.githubusercontent.com:aud\": \"sts.amazonaws.com\"\n        },\n        \"StringLike\": {\n          \"token.actions.githubusercontent.com:sub\": [\n            \"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\n            \"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"\n          ]\n        }\n      }\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Principal\":{\"Federated\":\"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"},\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":[\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"]}}}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "sts:AssumeRoleWithWebIdentity"
+                ],
+                "condition": [
+                  {
+                    "test": "StringEquals",
+                    "values": [
+                      "sts.amazonaws.com"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:aud"
+                  },
+                  {
+                    "test": "StringLike",
+                    "values": [
+                      "repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request",
+                      "repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:sub"
+                  }
+                ],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [
+                  {
+                    "identifiers": [
+                      "arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com"
+                    ],
+                    "type": "Federated"
+                  }
+                ],
+                "resources": [],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        },
+        {
+          "index_key": "spoke-dev",
+          "schema_version": 0,
+          "attributes": {
+            "id": "1908939356",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRoleWithWebIdentity\",\n      \"Principal\": {\n        \"Federated\": \"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"\n      },\n      \"Condition\": {\n        \"StringEquals\": {\n          \"token.actions.githubusercontent.com:aud\": \"sts.amazonaws.com\"\n        },\n        \"StringLike\": {\n          \"token.actions.githubusercontent.com:sub\": [\n            \"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\n            \"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"\n          ]\n        }\n      }\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Principal\":{\"Federated\":\"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"},\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":[\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"]}}}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "sts:AssumeRoleWithWebIdentity"
+                ],
+                "condition": [
+                  {
+                    "test": "StringEquals",
+                    "values": [
+                      "sts.amazonaws.com"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:aud"
+                  },
+                  {
+                    "test": "StringLike",
+                    "values": [
+                      "repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request",
+                      "repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:sub"
+                  }
+                ],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [
+                  {
+                    "identifiers": [
+                      "arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com"
+                    ],
+                    "type": "Federated"
+                  }
+                ],
+                "resources": [],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        },
+        {
+          "index_key": "spoke-prod",
+          "schema_version": 0,
+          "attributes": {
+            "id": "1908939356",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRoleWithWebIdentity\",\n      \"Principal\": {\n        \"Federated\": \"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"\n      },\n      \"Condition\": {\n        \"StringEquals\": {\n          \"token.actions.githubusercontent.com:aud\": \"sts.amazonaws.com\"\n        },\n        \"StringLike\": {\n          \"token.actions.githubusercontent.com:sub\": [\n            \"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\n            \"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"\n          ]\n        }\n      }\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Principal\":{\"Federated\":\"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"},\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":[\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"]}}}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "sts:AssumeRoleWithWebIdentity"
+                ],
+                "condition": [
+                  {
+                    "test": "StringEquals",
+                    "values": [
+                      "sts.amazonaws.com"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:aud"
+                  },
+                  {
+                    "test": "StringLike",
+                    "values": [
+                      "repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request",
+                      "repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:sub"
+                  }
+                ],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [
+                  {
+                    "identifiers": [
+                      "arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com"
+                    ],
+                    "type": "Federated"
+                  }
+                ],
+                "resources": [],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "backend_access",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "hub",
+          "schema_version": 0,
+          "attributes": {
+            "id": "2688035496",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"OwnStateReadWrite\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"s3:PutObject\",\n        \"s3:GetObject\",\n        \"s3:DeleteObject\"\n      ],\n      \"Resource\": \"arn:aws:s3:::hub-spoke-tf-state-new/hub/terraform.tfstate\"\n    },\n    {\n      \"Sid\": \"ListStateBucket\",\n      \"Effect\": \"Allow\",\n      \"Action\": \"s3:ListBucket\",\n      \"Resource\": \"arn:aws:s3:::hub-spoke-tf-state-new\"\n    },\n    {\n      \"Sid\": \"StateLock\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"dynamodb:PutItem\",\n        \"dynamodb:GetItem\",\n        \"dynamodb:DeleteItem\"\n      ],\n      \"Resource\": \"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\"\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"OwnStateReadWrite\",\"Effect\":\"Allow\",\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/hub/terraform.tfstate\"},{\"Sid\":\"ListStateBucket\",\"Effect\":\"Allow\",\"Action\":\"s3:ListBucket\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\"},{\"Sid\":\"StateLock\",\"Effect\":\"Allow\",\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\"}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "s3:DeleteObject",
+                  "s3:GetObject",
+                  "s3:PutObject"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:s3:::hub-spoke-tf-state-new/hub/terraform.tfstate"
+                ],
+                "sid": "OwnStateReadWrite"
+              },
+              {
+                "actions": [
+                  "s3:ListBucket"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:s3:::hub-spoke-tf-state-new"
+                ],
+                "sid": "ListStateBucket"
+              },
+              {
+                "actions": [
+                  "dynamodb:DeleteItem",
+                  "dynamodb:GetItem",
+                  "dynamodb:PutItem"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock"
+                ],
+                "sid": "StateLock"
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        },
+        {
+          "index_key": "spoke-dev",
+          "schema_version": 0,
+          "attributes": {
+            "id": "1575275748",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"OwnStateReadWrite\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"s3:PutObject\",\n        \"s3:GetObject\",\n        \"s3:DeleteObject\"\n      ],\n      \"Resource\": \"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\"\n    },\n    {\n      \"Sid\": \"ListStateBucket\",\n      \"Effect\": \"Allow\",\n      \"Action\": \"s3:ListBucket\",\n      \"Resource\": \"arn:aws:s3:::hub-spoke-tf-state-new\"\n    },\n    {\n      \"Sid\": \"StateLock\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"dynamodb:PutItem\",\n        \"dynamodb:GetItem\",\n        \"dynamodb:DeleteItem\"\n      ],\n      \"Resource\": \"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\"\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"OwnStateReadWrite\",\"Effect\":\"Allow\",\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\"},{\"Sid\":\"ListStateBucket\",\"Effect\":\"Allow\",\"Action\":\"s3:ListBucket\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\"},{\"Sid\":\"StateLock\",\"Effect\":\"Allow\",\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\"}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "s3:DeleteObject",
+                  "s3:GetObject",
+                  "s3:PutObject"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate"
+                ],
+                "sid": "OwnStateReadWrite"
+              },
+              {
+                "actions": [
+                  "s3:ListBucket"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:s3:::hub-spoke-tf-state-new"
+                ],
+                "sid": "ListStateBucket"
+              },
+              {
+                "actions": [
+                  "dynamodb:DeleteItem",
+                  "dynamodb:GetItem",
+                  "dynamodb:PutItem"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock"
+                ],
+                "sid": "StateLock"
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        },
+        {
+          "index_key": "spoke-prod",
+          "schema_version": 0,
+          "attributes": {
+            "id": "2501037968",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"OwnStateReadWrite\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"s3:PutObject\",\n        \"s3:GetObject\",\n        \"s3:DeleteObject\"\n      ],\n      \"Resource\": \"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\"\n    },\n    {\n      \"Sid\": \"ListStateBucket\",\n      \"Effect\": \"Allow\",\n      \"Action\": \"s3:ListBucket\",\n      \"Resource\": \"arn:aws:s3:::hub-spoke-tf-state-new\"\n    },\n    {\n      \"Sid\": \"StateLock\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"dynamodb:PutItem\",\n        \"dynamodb:GetItem\",\n        \"dynamodb:DeleteItem\"\n      ],\n      \"Resource\": \"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\"\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"OwnStateReadWrite\",\"Effect\":\"Allow\",\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\"},{\"Sid\":\"ListStateBucket\",\"Effect\":\"Allow\",\"Action\":\"s3:ListBucket\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\"},{\"Sid\":\"StateLock\",\"Effect\":\"Allow\",\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\"}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "s3:DeleteObject",
+                  "s3:GetObject",
+                  "s3:PutObject"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate"
+                ],
+                "sid": "OwnStateReadWrite"
+              },
+              {
+                "actions": [
+                  "s3:ListBucket"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:s3:::hub-spoke-tf-state-new"
+                ],
+                "sid": "ListStateBucket"
+              },
+              {
+                "actions": [
+                  "dynamodb:DeleteItem",
+                  "dynamodb:GetItem",
+                  "dynamodb:PutItem"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock"
+                ],
+                "sid": "StateLock"
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "hub_only",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "1170364112",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"ReadSpokeStateForRemoteState\",\n      \"Effect\": \"Allow\",\n      \"Action\": \"s3:GetObject\",\n      \"Resource\": [\n        \"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\",\n        \"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\"\n      ]\n    },\n    {\n      \"Sid\": \"TransitGateway\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"ec2:ReplaceTransitGatewayRoute\",\n        \"ec2:ModifyTransitGatewayVpcAttachment\",\n        \"ec2:ModifyTransitGateway\",\n        \"ec2:EnableTransitGatewayRouteTablePropagation\",\n        \"ec2:DisassociateTransitGatewayRouteTable\",\n        \"ec2:DisableTransitGatewayRouteTablePropagation\",\n        \"ec2:DeleteTransitGatewayVpcAttachment\",\n        \"ec2:DeleteTransitGatewayRouteTable\",\n        \"ec2:DeleteTransitGatewayRoute\",\n        \"ec2:DeleteTransitGateway\",\n        \"ec2:CreateTransitGatewayVpcAttachment\",\n        \"ec2:CreateTransitGatewayRouteTable\",\n        \"ec2:CreateTransitGatewayRoute\",\n        \"ec2:CreateTransitGateway\",\n        \"ec2:AssociateTransitGatewayRouteTable\"\n      ],\n      \"Resource\": \"*\"\n    },\n    {\n      \"Sid\": \"Route53PrivateZone\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"route53:ListTagsForResource\",\n        \"route53:ListResourceRecordSets\",\n        \"route53:ListHostedZones\",\n        \"route53:GetHostedZone\",\n        \"route53:DisassociateVPCFromHostedZone\",\n        \"route53:DeleteHostedZone\",\n        \"route53:CreateHostedZone\",\n        \"route53:ChangeTagsForResource\",\n        \"route53:ChangeResourceRecordSets\",\n        \"route53:AssociateVPCWithHostedZone\"\n      ],\n      \"Resource\": \"*\"\n    },\n    {\n      \"Sid\": \"FlowLogsCloudWatch\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"logs:TagResource\",\n        \"logs:PutRetentionPolicy\",\n        \"logs:DescribeLogStreams\",\n        \"logs:DescribeLogGroups\",\n        \"logs:DeleteLogGroup\",\n        \"logs:CreateLogGroup\",\n        \"ec2:DeleteFlowLogs\",\n        \"ec2:CreateFlowLogs\"\n      ],\n      \"Resource\": \"*\"\n    },\n    {\n      \"Sid\": \"FlowLogsDeliveryRole\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"iam:TagRole\",\n        \"iam:PutRolePolicy\",\n        \"iam:PassRole\",\n        \"iam:ListRolePolicies\",\n        \"iam:GetRolePolicy\",\n        \"iam:GetRole\",\n        \"iam:DeleteRolePolicy\",\n        \"iam:DeleteRole\",\n        \"iam:CreateRole\"\n      ],\n      \"Resource\": \"arn:aws:iam::300272448172:role/vpc-flow-logs-role\"\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"ReadSpokeStateForRemoteState\",\"Effect\":\"Allow\",\"Action\":\"s3:GetObject\",\"Resource\":[\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\",\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\"]},{\"Sid\":\"TransitGateway\",\"Effect\":\"Allow\",\"Action\":[\"ec2:ReplaceTransitGatewayRoute\",\"ec2:ModifyTransitGatewayVpcAttachment\",\"ec2:ModifyTransitGateway\",\"ec2:EnableTransitGatewayRouteTablePropagation\",\"ec2:DisassociateTransitGatewayRouteTable\",\"ec2:DisableTransitGatewayRouteTablePropagation\",\"ec2:DeleteTransitGatewayVpcAttachment\",\"ec2:DeleteTransitGatewayRouteTable\",\"ec2:DeleteTransitGatewayRoute\",\"ec2:DeleteTransitGateway\",\"ec2:CreateTransitGatewayVpcAttachment\",\"ec2:CreateTransitGatewayRouteTable\",\"ec2:CreateTransitGatewayRoute\",\"ec2:CreateTransitGateway\",\"ec2:AssociateTransitGatewayRouteTable\"],\"Resource\":\"*\"},{\"Sid\":\"Route53PrivateZone\",\"Effect\":\"Allow\",\"Action\":[\"route53:ListTagsForResource\",\"route53:ListResourceRecordSets\",\"route53:ListHostedZones\",\"route53:GetHostedZone\",\"route53:DisassociateVPCFromHostedZone\",\"route53:DeleteHostedZone\",\"route53:CreateHostedZone\",\"route53:ChangeTagsForResource\",\"route53:ChangeResourceRecordSets\",\"route53:AssociateVPCWithHostedZone\"],\"Resource\":\"*\"},{\"Sid\":\"FlowLogsCloudWatch\",\"Effect\":\"Allow\",\"Action\":[\"logs:TagResource\",\"logs:PutRetentionPolicy\",\"logs:DescribeLogStreams\",\"logs:DescribeLogGroups\",\"logs:DeleteLogGroup\",\"logs:CreateLogGroup\",\"ec2:DeleteFlowLogs\",\"ec2:CreateFlowLogs\"],\"Resource\":\"*\"},{\"Sid\":\"FlowLogsDeliveryRole\",\"Effect\":\"Allow\",\"Action\":[\"iam:TagRole\",\"iam:PutRolePolicy\",\"iam:PassRole\",\"iam:ListRolePolicies\",\"iam:GetRolePolicy\",\"iam:GetRole\",\"iam:DeleteRolePolicy\",\"iam:DeleteRole\",\"iam:CreateRole\"],\"Resource\":\"arn:aws:iam::300272448172:role/vpc-flow-logs-role\"}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "s3:GetObject"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate",
+                  "arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate"
+                ],
+                "sid": "ReadSpokeStateForRemoteState"
+              },
+              {
+                "actions": [
+                  "ec2:AssociateTransitGatewayRouteTable",
+                  "ec2:CreateTransitGateway",
+                  "ec2:CreateTransitGatewayRoute",
+                  "ec2:CreateTransitGatewayRouteTable",
+                  "ec2:CreateTransitGatewayVpcAttachment",
+                  "ec2:DeleteTransitGateway",
+                  "ec2:DeleteTransitGatewayRoute",
+                  "ec2:DeleteTransitGatewayRouteTable",
+                  "ec2:DeleteTransitGatewayVpcAttachment",
+                  "ec2:DisableTransitGatewayRouteTablePropagation",
+                  "ec2:DisassociateTransitGatewayRouteTable",
+                  "ec2:EnableTransitGatewayRouteTablePropagation",
+                  "ec2:ModifyTransitGateway",
+                  "ec2:ModifyTransitGatewayVpcAttachment",
+                  "ec2:ReplaceTransitGatewayRoute"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "*"
+                ],
+                "sid": "TransitGateway"
+              },
+              {
+                "actions": [
+                  "route53:AssociateVPCWithHostedZone",
+                  "route53:ChangeResourceRecordSets",
+                  "route53:ChangeTagsForResource",
+                  "route53:CreateHostedZone",
+                  "route53:DeleteHostedZone",
+                  "route53:DisassociateVPCFromHostedZone",
+                  "route53:GetHostedZone",
+                  "route53:ListHostedZones",
+                  "route53:ListResourceRecordSets",
+                  "route53:ListTagsForResource"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "*"
+                ],
+                "sid": "Route53PrivateZone"
+              },
+              {
+                "actions": [
+                  "ec2:CreateFlowLogs",
+                  "ec2:DeleteFlowLogs",
+                  "logs:CreateLogGroup",
+                  "logs:DeleteLogGroup",
+                  "logs:DescribeLogGroups",
+                  "logs:DescribeLogStreams",
+                  "logs:PutRetentionPolicy",
+                  "logs:TagResource"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "*"
+                ],
+                "sid": "FlowLogsCloudWatch"
+              },
+              {
+                "actions": [
+                  "iam:CreateRole",
+                  "iam:DeleteRole",
+                  "iam:DeleteRolePolicy",
+                  "iam:GetRole",
+                  "iam:GetRolePolicy",
+                  "iam:ListRolePolicies",
+                  "iam:PassRole",
+                  "iam:PutRolePolicy",
+                  "iam:TagRole"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:iam::300272448172:role/vpc-flow-logs-role"
+                ],
+                "sid": "FlowLogsDeliveryRole"
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "network_common",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "4218322589",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"NetworkingAndCompute\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"ec2:TerminateInstances\",\n        \"ec2:StopInstances\",\n        \"ec2:StartInstances\",\n        \"ec2:RunInstances\",\n        \"ec2:RevokeSecurityGroupIngress\",\n        \"ec2:RevokeSecurityGroupEgress\",\n        \"ec2:ReplaceRoute\",\n        \"ec2:ReleaseAddress\",\n        \"ec2:ModifyVpcAttribute\",\n        \"ec2:ModifySubnetAttribute\",\n        \"ec2:ModifyInstanceAttribute\",\n        \"ec2:DisassociateRouteTable\",\n        \"ec2:DisassociateAddress\",\n        \"ec2:DetachInternetGateway\",\n        \"ec2:Describe*\",\n        \"ec2:DeleteVpc\",\n        \"ec2:DeleteTags\",\n        \"ec2:DeleteSubnet\",\n        \"ec2:DeleteSecurityGroup\",\n        \"ec2:DeleteRouteTable\",\n        \"ec2:DeleteRoute\",\n        \"ec2:DeleteNatGateway\",\n        \"ec2:DeleteInternetGateway\",\n        \"ec2:CreateVpc\",\n        \"ec2:CreateTags\",\n        \"ec2:CreateSubnet\",\n        \"ec2:CreateSecurityGroup\",\n        \"ec2:CreateRouteTable\",\n        \"ec2:CreateRoute\",\n        \"ec2:CreateNatGateway\",\n        \"ec2:CreateInternetGateway\",\n        \"ec2:AuthorizeSecurityGroupIngress\",\n        \"ec2:AuthorizeSecurityGroupEgress\",\n        \"ec2:AttachInternetGateway\",\n        \"ec2:AssociateRouteTable\",\n        \"ec2:AssociateAddress\",\n        \"ec2:AllocateAddress\"\n      ],\n      \"Resource\": \"*\"\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"NetworkingAndCompute\",\"Effect\":\"Allow\",\"Action\":[\"ec2:TerminateInstances\",\"ec2:StopInstances\",\"ec2:StartInstances\",\"ec2:RunInstances\",\"ec2:RevokeSecurityGroupIngress\",\"ec2:RevokeSecurityGroupEgress\",\"ec2:ReplaceRoute\",\"ec2:ReleaseAddress\",\"ec2:ModifyVpcAttribute\",\"ec2:ModifySubnetAttribute\",\"ec2:ModifyInstanceAttribute\",\"ec2:DisassociateRouteTable\",\"ec2:DisassociateAddress\",\"ec2:DetachInternetGateway\",\"ec2:Describe*\",\"ec2:DeleteVpc\",\"ec2:DeleteTags\",\"ec2:DeleteSubnet\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteRouteTable\",\"ec2:DeleteRoute\",\"ec2:DeleteNatGateway\",\"ec2:DeleteInternetGateway\",\"ec2:CreateVpc\",\"ec2:CreateTags\",\"ec2:CreateSubnet\",\"ec2:CreateSecurityGroup\",\"ec2:CreateRouteTable\",\"ec2:CreateRoute\",\"ec2:CreateNatGateway\",\"ec2:CreateInternetGateway\",\"ec2:AuthorizeSecurityGroupIngress\",\"ec2:AuthorizeSecurityGroupEgress\",\"ec2:AttachInternetGateway\",\"ec2:AssociateRouteTable\",\"ec2:AssociateAddress\",\"ec2:AllocateAddress\"],\"Resource\":\"*\"}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "ec2:AllocateAddress",
+                  "ec2:AssociateAddress",
+                  "ec2:AssociateRouteTable",
+                  "ec2:AttachInternetGateway",
+                  "ec2:AuthorizeSecurityGroupEgress",
+                  "ec2:AuthorizeSecurityGroupIngress",
+                  "ec2:CreateInternetGateway",
+                  "ec2:CreateNatGateway",
+                  "ec2:CreateRoute",
+                  "ec2:CreateRouteTable",
+                  "ec2:CreateSecurityGroup",
+                  "ec2:CreateSubnet",
+                  "ec2:CreateTags",
+                  "ec2:CreateVpc",
+                  "ec2:DeleteInternetGateway",
+                  "ec2:DeleteNatGateway",
+                  "ec2:DeleteRoute",
+                  "ec2:DeleteRouteTable",
+                  "ec2:DeleteSecurityGroup",
+                  "ec2:DeleteSubnet",
+                  "ec2:DeleteTags",
+                  "ec2:DeleteVpc",
+                  "ec2:Describe*",
+                  "ec2:DetachInternetGateway",
+                  "ec2:DisassociateAddress",
+                  "ec2:DisassociateRouteTable",
+                  "ec2:ModifyInstanceAttribute",
+                  "ec2:ModifySubnetAttribute",
+                  "ec2:ModifyVpcAttribute",
+                  "ec2:ReleaseAddress",
+                  "ec2:ReplaceRoute",
+                  "ec2:RevokeSecurityGroupEgress",
+                  "ec2:RevokeSecurityGroupIngress",
+                  "ec2:RunInstances",
+                  "ec2:StartInstances",
+                  "ec2:StopInstances",
+                  "ec2:TerminateInstances"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "*"
+                ],
+                "sid": "NetworkingAndCompute"
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_dynamodb_table",
+      "name": "tf_lock",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock",
+            "attribute": [
+              {
+                "name": "LockID",
+                "type": "S"
+              }
+            ],
+            "billing_mode": "PAY_PER_REQUEST",
+            "deletion_protection_enabled": false,
+            "global_secondary_index": [],
+            "hash_key": "LockID",
+            "id": "tf-state-lock",
+            "import_table": [],
+            "local_secondary_index": [],
+            "name": "tf-state-lock",
+            "on_demand_throughput": [],
+            "point_in_time_recovery": [
+              {
+                "enabled": false,
+                "recovery_period_in_days": 0
+              }
+            ],
+            "range_key": null,
+            "read_capacity": 0,
+            "replica": [],
+            "restore_date_time": null,
+            "restore_source_name": null,
+            "restore_source_table_arn": null,
+            "restore_to_latest_time": null,
+            "server_side_encryption": [],
+            "stream_arn": "",
+            "stream_enabled": false,
+            "stream_label": "",
+            "stream_view_type": "",
+            "table_class": "STANDARD",
+            "tags": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "tf-state-lock",
+              "Project": "hub-spoke-network"
+            },
+            "tags_all": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "tf-state-lock",
+              "Project": "hub-spoke-network"
+            },
+            "timeouts": null,
+            "ttl": [
+              {
+                "attribute_name": "",
+                "enabled": false
+              }
+            ],
+            "write_capacity": 0
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjYwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_openid_connect_provider",
+      "name": "github",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com",
+            "client_id_list": [
+              "sts.amazonaws.com"
+            ],
+            "id": "arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com",
+            "tags": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "github-actions-oidc",
+              "Project": "hub-spoke-network"
+            },
+            "tags_all": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "github-actions-oidc",
+              "Project": "hub-spoke-network"
+            },
+            "thumbprint_list": [
+              "6938fd4d98bab03faadb97b34396831e3780aea1"
+            ],
+            "url": "token.actions.githubusercontent.com"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjAifQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "deploy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "hub",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::300272448172:role/gha-hub-deploy-role",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":[\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"]}},\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-07-24T22:47:10Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "gha-hub-deploy-role",
+            "inline_policy": [
+              {
+                "name": "backend-access",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/hub/terraform.tfstate\",\"Sid\":\"OwnStateReadWrite\"},{\"Action\":\"s3:ListBucket\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\",\"Sid\":\"ListStateBucket\"},{\"Action\":\"s3:GetObject\",\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\",\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\"],\"Sid\":\"ReadSpokeStateForRemoteState\"},{\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\",\"Sid\":\"StateLock\"}]}"
+              },
+              {
+                "name": "hub-only",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:ReplaceTransitGatewayRoute\",\"ec2:ModifyTransitGatewayVpcAttachment\",\"ec2:ModifyTransitGateway\",\"ec2:EnableTransitGatewayRouteTablePropagation\",\"ec2:DisassociateTransitGatewayRouteTable\",\"ec2:DisableTransitGatewayRouteTablePropagation\",\"ec2:DeleteTransitGatewayVpcAttachment\",\"ec2:DeleteTransitGatewayRouteTable\",\"ec2:DeleteTransitGatewayRoute\",\"ec2:DeleteTransitGateway\",\"ec2:CreateTransitGatewayVpcAttachment\",\"ec2:CreateTransitGatewayRouteTable\",\"ec2:CreateTransitGatewayRoute\",\"ec2:CreateTransitGateway\",\"ec2:AssociateTransitGatewayRouteTable\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"TransitGateway\"},{\"Action\":[\"route53:ListTagsForResource\",\"route53:ListResourceRecordSets\",\"route53:ListHostedZones\",\"route53:GetHostedZone\",\"route53:DisassociateVPCFromHostedZone\",\"route53:DeleteHostedZone\",\"route53:CreateHostedZone\",\"route53:ChangeTagsForResource\",\"route53:ChangeResourceRecordSets\",\"route53:AssociateVPCWithHostedZone\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"Route53PrivateZone\"},{\"Action\":[\"logs:TagResource\",\"logs:PutRetentionPolicy\",\"logs:DescribeLogStreams\",\"logs:DescribeLogGroups\",\"logs:DeleteLogGroup\",\"logs:CreateLogGroup\",\"ec2:DeleteFlowLogs\",\"ec2:CreateFlowLogs\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"FlowLogsCloudWatch\"},{\"Action\":[\"iam:TagRole\",\"iam:PutRolePolicy\",\"iam:PassRole\",\"iam:ListRolePolicies\",\"iam:GetRolePolicy\",\"iam:GetRole\",\"iam:DeleteRolePolicy\",\"iam:DeleteRole\",\"iam:CreateRole\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:iam::300272448172:role/vpc-flow-logs-role\",\"Sid\":\"FlowLogsDeliveryRole\"}]}"
+              },
+              {
+                "name": "network-common",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:TerminateInstances\",\"ec2:StopInstances\",\"ec2:StartInstances\",\"ec2:RunInstances\",\"ec2:RevokeSecurityGroupIngress\",\"ec2:RevokeSecurityGroupEgress\",\"ec2:ReplaceRoute\",\"ec2:ReleaseAddress\",\"ec2:ModifyVpcAttribute\",\"ec2:ModifySubnetAttribute\",\"ec2:ModifyInstanceAttribute\",\"ec2:DisassociateRouteTable\",\"ec2:DisassociateAddress\",\"ec2:DetachInternetGateway\",\"ec2:Describe*\",\"ec2:DeleteVpc\",\"ec2:DeleteTags\",\"ec2:DeleteSubnet\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteRouteTable\",\"ec2:DeleteRoute\",\"ec2:DeleteNatGateway\",\"ec2:DeleteInternetGateway\",\"ec2:CreateVpc\",\"ec2:CreateTags\",\"ec2:CreateSubnet\",\"ec2:CreateSecurityGroup\",\"ec2:CreateRouteTable\",\"ec2:CreateRoute\",\"ec2:CreateNatGateway\",\"ec2:CreateInternetGateway\",\"ec2:AuthorizeSecurityGroupIngress\",\"ec2:AuthorizeSecurityGroupEgress\",\"ec2:AttachInternetGateway\",\"ec2:AssociateRouteTable\",\"ec2:AssociateAddress\",\"ec2:AllocateAddress\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"NetworkingAndCompute\"}]}"
+              }
+            ],
+            "managed_policy_arns": [],
+            "max_session_duration": 3600,
+            "name": "gha-hub-deploy-role",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "gha-hub-deploy-role",
+              "Project": "hub-spoke-network"
+            },
+            "tags_all": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "gha-hub-deploy-role",
+              "Project": "hub-spoke-network"
+            },
+            "unique_id": "AROAUL2NB6KWAZM5UN5LC"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjAifQ==",
+          "dependencies": [
+            "aws_iam_openid_connect_provider.github",
+            "data.aws_iam_policy_document.assume_role"
+          ]
+        },
+        {
+          "index_key": "spoke-dev",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::300272448172:role/gha-spoke-dev-deploy-role",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":[\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"]}},\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-07-24T22:47:10Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "gha-spoke-dev-deploy-role",
+            "inline_policy": [
+              {
+                "name": "backend-access",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\",\"Sid\":\"OwnStateReadWrite\"},{\"Action\":\"s3:ListBucket\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\",\"Sid\":\"ListStateBucket\"},{\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\",\"Sid\":\"StateLock\"}]}"
+              },
+              {
+                "name": "network-common",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:TerminateInstances\",\"ec2:StopInstances\",\"ec2:StartInstances\",\"ec2:RunInstances\",\"ec2:RevokeSecurityGroupIngress\",\"ec2:RevokeSecurityGroupEgress\",\"ec2:ReplaceRoute\",\"ec2:ReleaseAddress\",\"ec2:ModifyVpcAttribute\",\"ec2:ModifySubnetAttribute\",\"ec2:ModifyInstanceAttribute\",\"ec2:DisassociateRouteTable\",\"ec2:DisassociateAddress\",\"ec2:DetachInternetGateway\",\"ec2:Describe*\",\"ec2:DeleteVpc\",\"ec2:DeleteTags\",\"ec2:DeleteSubnet\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteRouteTable\",\"ec2:DeleteRoute\",\"ec2:DeleteNatGateway\",\"ec2:DeleteInternetGateway\",\"ec2:CreateVpc\",\"ec2:CreateTags\",\"ec2:CreateSubnet\",\"ec2:CreateSecurityGroup\",\"ec2:CreateRouteTable\",\"ec2:CreateRoute\",\"ec2:CreateNatGateway\",\"ec2:CreateInternetGateway\",\"ec2:AuthorizeSecurityGroupIngress\",\"ec2:AuthorizeSecurityGroupEgress\",\"ec2:AttachInternetGateway\",\"ec2:AssociateRouteTable\",\"ec2:AssociateAddress\",\"ec2:AllocateAddress\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"NetworkingAndCompute\"}]}"
+              }
+            ],
+            "managed_policy_arns": [],
+            "max_session_duration": 3600,
+            "name": "gha-spoke-dev-deploy-role",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "gha-spoke-dev-deploy-role",
+              "Project": "hub-spoke-network"
+            },
+            "tags_all": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "gha-spoke-dev-deploy-role",
+              "Project": "hub-spoke-network"
+            },
+            "unique_id": "AROAUL2NB6KWDQGCORJW5"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjAifQ==",
+          "dependencies": [
+            "aws_iam_openid_connect_provider.github",
+            "data.aws_iam_policy_document.assume_role"
+          ]
+        },
+        {
+          "index_key": "spoke-prod",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::300272448172:role/gha-spoke-prod-deploy-role",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":[\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:pull_request\",\"repo:leomarqueslimait-jpg/terraform-aws-hub-spoke:ref:refs/heads/main\"]}},\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::300272448172:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-07-24T22:47:10Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "gha-spoke-prod-deploy-role",
+            "inline_policy": [
+              {
+                "name": "backend-access",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\",\"Sid\":\"OwnStateReadWrite\"},{\"Action\":\"s3:ListBucket\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\",\"Sid\":\"ListStateBucket\"},{\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\",\"Sid\":\"StateLock\"}]}"
+              },
+              {
+                "name": "network-common",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:TerminateInstances\",\"ec2:StopInstances\",\"ec2:StartInstances\",\"ec2:RunInstances\",\"ec2:RevokeSecurityGroupIngress\",\"ec2:RevokeSecurityGroupEgress\",\"ec2:ReplaceRoute\",\"ec2:ReleaseAddress\",\"ec2:ModifyVpcAttribute\",\"ec2:ModifySubnetAttribute\",\"ec2:ModifyInstanceAttribute\",\"ec2:DisassociateRouteTable\",\"ec2:DisassociateAddress\",\"ec2:DetachInternetGateway\",\"ec2:Describe*\",\"ec2:DeleteVpc\",\"ec2:DeleteTags\",\"ec2:DeleteSubnet\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteRouteTable\",\"ec2:DeleteRoute\",\"ec2:DeleteNatGateway\",\"ec2:DeleteInternetGateway\",\"ec2:CreateVpc\",\"ec2:CreateTags\",\"ec2:CreateSubnet\",\"ec2:CreateSecurityGroup\",\"ec2:CreateRouteTable\",\"ec2:CreateRoute\",\"ec2:CreateNatGateway\",\"ec2:CreateInternetGateway\",\"ec2:AuthorizeSecurityGroupIngress\",\"ec2:AuthorizeSecurityGroupEgress\",\"ec2:AttachInternetGateway\",\"ec2:AssociateRouteTable\",\"ec2:AssociateAddress\",\"ec2:AllocateAddress\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"NetworkingAndCompute\"}]}"
+              }
+            ],
+            "managed_policy_arns": [],
+            "max_session_duration": 3600,
+            "name": "gha-spoke-prod-deploy-role",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "gha-spoke-prod-deploy-role",
+              "Project": "hub-spoke-network"
+            },
+            "tags_all": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "gha-spoke-prod-deploy-role",
+              "Project": "hub-spoke-network"
+            },
+            "unique_id": "AROAUL2NB6KWCJSZQX2WW"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjAifQ==",
+          "dependencies": [
+            "aws_iam_openid_connect_provider.github",
+            "data.aws_iam_policy_document.assume_role"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "backend_access",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "hub",
+          "schema_version": 0,
+          "attributes": {
+            "id": "gha-hub-deploy-role:backend-access",
+            "name": "backend-access",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/hub/terraform.tfstate\",\"Sid\":\"OwnStateReadWrite\"},{\"Action\":\"s3:ListBucket\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\",\"Sid\":\"ListStateBucket\"},{\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\",\"Sid\":\"StateLock\"}]}",
+            "role": "gha-hub-deploy-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_dynamodb_table.tf_lock",
+            "aws_iam_openid_connect_provider.github",
+            "aws_iam_role.deploy",
+            "aws_s3_bucket.tf_state",
+            "data.aws_iam_policy_document.assume_role",
+            "data.aws_iam_policy_document.backend_access"
+          ]
+        },
+        {
+          "index_key": "spoke-dev",
+          "schema_version": 0,
+          "attributes": {
+            "id": "gha-spoke-dev-deploy-role:backend-access",
+            "name": "backend-access",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\",\"Sid\":\"OwnStateReadWrite\"},{\"Action\":\"s3:ListBucket\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\",\"Sid\":\"ListStateBucket\"},{\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\",\"Sid\":\"StateLock\"}]}",
+            "role": "gha-spoke-dev-deploy-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_dynamodb_table.tf_lock",
+            "aws_iam_openid_connect_provider.github",
+            "aws_iam_role.deploy",
+            "aws_s3_bucket.tf_state",
+            "data.aws_iam_policy_document.assume_role",
+            "data.aws_iam_policy_document.backend_access"
+          ]
+        },
+        {
+          "index_key": "spoke-prod",
+          "schema_version": 0,
+          "attributes": {
+            "id": "gha-spoke-prod-deploy-role:backend-access",
+            "name": "backend-access",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:PutObject\",\"s3:GetObject\",\"s3:DeleteObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\",\"Sid\":\"OwnStateReadWrite\"},{\"Action\":\"s3:ListBucket\",\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::hub-spoke-tf-state-new\",\"Sid\":\"ListStateBucket\"},{\"Action\":[\"dynamodb:PutItem\",\"dynamodb:GetItem\",\"dynamodb:DeleteItem\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:dynamodb:us-east-1:300272448172:table/tf-state-lock\",\"Sid\":\"StateLock\"}]}",
+            "role": "gha-spoke-prod-deploy-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_dynamodb_table.tf_lock",
+            "aws_iam_openid_connect_provider.github",
+            "aws_iam_role.deploy",
+            "aws_s3_bucket.tf_state",
+            "data.aws_iam_policy_document.assume_role",
+            "data.aws_iam_policy_document.backend_access"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "hub_only",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "gha-hub-deploy-role:hub-only",
+            "name": "hub-only",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":\"s3:GetObject\",\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-prod/terraform.tfstate\",\"arn:aws:s3:::hub-spoke-tf-state-new/spoke-dev/terraform.tfstate\"],\"Sid\":\"ReadSpokeStateForRemoteState\"},{\"Action\":[\"ec2:ReplaceTransitGatewayRoute\",\"ec2:ModifyTransitGatewayVpcAttachment\",\"ec2:ModifyTransitGateway\",\"ec2:EnableTransitGatewayRouteTablePropagation\",\"ec2:DisassociateTransitGatewayRouteTable\",\"ec2:DisableTransitGatewayRouteTablePropagation\",\"ec2:DeleteTransitGatewayVpcAttachment\",\"ec2:DeleteTransitGatewayRouteTable\",\"ec2:DeleteTransitGatewayRoute\",\"ec2:DeleteTransitGateway\",\"ec2:CreateTransitGatewayVpcAttachment\",\"ec2:CreateTransitGatewayRouteTable\",\"ec2:CreateTransitGatewayRoute\",\"ec2:CreateTransitGateway\",\"ec2:AssociateTransitGatewayRouteTable\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"TransitGateway\"},{\"Action\":[\"route53:ListTagsForResource\",\"route53:ListResourceRecordSets\",\"route53:ListHostedZones\",\"route53:GetHostedZone\",\"route53:DisassociateVPCFromHostedZone\",\"route53:DeleteHostedZone\",\"route53:CreateHostedZone\",\"route53:ChangeTagsForResource\",\"route53:ChangeResourceRecordSets\",\"route53:AssociateVPCWithHostedZone\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"Route53PrivateZone\"},{\"Action\":[\"logs:TagResource\",\"logs:PutRetentionPolicy\",\"logs:DescribeLogStreams\",\"logs:DescribeLogGroups\",\"logs:DeleteLogGroup\",\"logs:CreateLogGroup\",\"ec2:DeleteFlowLogs\",\"ec2:CreateFlowLogs\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"FlowLogsCloudWatch\"},{\"Action\":[\"iam:TagRole\",\"iam:PutRolePolicy\",\"iam:PassRole\",\"iam:ListRolePolicies\",\"iam:GetRolePolicy\",\"iam:GetRole\",\"iam:DeleteRolePolicy\",\"iam:DeleteRole\",\"iam:CreateRole\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:iam::300272448172:role/vpc-flow-logs-role\",\"Sid\":\"FlowLogsDeliveryRole\"}]}",
+            "role": "gha-hub-deploy-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_openid_connect_provider.github",
+            "aws_iam_role.deploy",
+            "aws_s3_bucket.tf_state",
+            "data.aws_caller_identity.current",
+            "data.aws_iam_policy_document.assume_role",
+            "data.aws_iam_policy_document.hub_only"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "network_common",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "hub",
+          "schema_version": 0,
+          "attributes": {
+            "id": "gha-hub-deploy-role:network-common",
+            "name": "network-common",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:TerminateInstances\",\"ec2:StopInstances\",\"ec2:StartInstances\",\"ec2:RunInstances\",\"ec2:RevokeSecurityGroupIngress\",\"ec2:RevokeSecurityGroupEgress\",\"ec2:ReplaceRoute\",\"ec2:ReleaseAddress\",\"ec2:ModifyVpcAttribute\",\"ec2:ModifySubnetAttribute\",\"ec2:ModifyInstanceAttribute\",\"ec2:DisassociateRouteTable\",\"ec2:DisassociateAddress\",\"ec2:DetachInternetGateway\",\"ec2:Describe*\",\"ec2:DeleteVpc\",\"ec2:DeleteTags\",\"ec2:DeleteSubnet\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteRouteTable\",\"ec2:DeleteRoute\",\"ec2:DeleteNatGateway\",\"ec2:DeleteInternetGateway\",\"ec2:CreateVpc\",\"ec2:CreateTags\",\"ec2:CreateSubnet\",\"ec2:CreateSecurityGroup\",\"ec2:CreateRouteTable\",\"ec2:CreateRoute\",\"ec2:CreateNatGateway\",\"ec2:CreateInternetGateway\",\"ec2:AuthorizeSecurityGroupIngress\",\"ec2:AuthorizeSecurityGroupEgress\",\"ec2:AttachInternetGateway\",\"ec2:AssociateRouteTable\",\"ec2:AssociateAddress\",\"ec2:AllocateAddress\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"NetworkingAndCompute\"}]}",
+            "role": "gha-hub-deploy-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_openid_connect_provider.github",
+            "aws_iam_role.deploy",
+            "data.aws_iam_policy_document.assume_role",
+            "data.aws_iam_policy_document.network_common"
+          ]
+        },
+        {
+          "index_key": "spoke-dev",
+          "schema_version": 0,
+          "attributes": {
+            "id": "gha-spoke-dev-deploy-role:network-common",
+            "name": "network-common",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:TerminateInstances\",\"ec2:StopInstances\",\"ec2:StartInstances\",\"ec2:RunInstances\",\"ec2:RevokeSecurityGroupIngress\",\"ec2:RevokeSecurityGroupEgress\",\"ec2:ReplaceRoute\",\"ec2:ReleaseAddress\",\"ec2:ModifyVpcAttribute\",\"ec2:ModifySubnetAttribute\",\"ec2:ModifyInstanceAttribute\",\"ec2:DisassociateRouteTable\",\"ec2:DisassociateAddress\",\"ec2:DetachInternetGateway\",\"ec2:Describe*\",\"ec2:DeleteVpc\",\"ec2:DeleteTags\",\"ec2:DeleteSubnet\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteRouteTable\",\"ec2:DeleteRoute\",\"ec2:DeleteNatGateway\",\"ec2:DeleteInternetGateway\",\"ec2:CreateVpc\",\"ec2:CreateTags\",\"ec2:CreateSubnet\",\"ec2:CreateSecurityGroup\",\"ec2:CreateRouteTable\",\"ec2:CreateRoute\",\"ec2:CreateNatGateway\",\"ec2:CreateInternetGateway\",\"ec2:AuthorizeSecurityGroupIngress\",\"ec2:AuthorizeSecurityGroupEgress\",\"ec2:AttachInternetGateway\",\"ec2:AssociateRouteTable\",\"ec2:AssociateAddress\",\"ec2:AllocateAddress\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"NetworkingAndCompute\"}]}",
+            "role": "gha-spoke-dev-deploy-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_openid_connect_provider.github",
+            "aws_iam_role.deploy",
+            "data.aws_iam_policy_document.assume_role",
+            "data.aws_iam_policy_document.network_common"
+          ]
+        },
+        {
+          "index_key": "spoke-prod",
+          "schema_version": 0,
+          "attributes": {
+            "id": "gha-spoke-prod-deploy-role:network-common",
+            "name": "network-common",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:TerminateInstances\",\"ec2:StopInstances\",\"ec2:StartInstances\",\"ec2:RunInstances\",\"ec2:RevokeSecurityGroupIngress\",\"ec2:RevokeSecurityGroupEgress\",\"ec2:ReplaceRoute\",\"ec2:ReleaseAddress\",\"ec2:ModifyVpcAttribute\",\"ec2:ModifySubnetAttribute\",\"ec2:ModifyInstanceAttribute\",\"ec2:DisassociateRouteTable\",\"ec2:DisassociateAddress\",\"ec2:DetachInternetGateway\",\"ec2:Describe*\",\"ec2:DeleteVpc\",\"ec2:DeleteTags\",\"ec2:DeleteSubnet\",\"ec2:DeleteSecurityGroup\",\"ec2:DeleteRouteTable\",\"ec2:DeleteRoute\",\"ec2:DeleteNatGateway\",\"ec2:DeleteInternetGateway\",\"ec2:CreateVpc\",\"ec2:CreateTags\",\"ec2:CreateSubnet\",\"ec2:CreateSecurityGroup\",\"ec2:CreateRouteTable\",\"ec2:CreateRoute\",\"ec2:CreateNatGateway\",\"ec2:CreateInternetGateway\",\"ec2:AuthorizeSecurityGroupIngress\",\"ec2:AuthorizeSecurityGroupEgress\",\"ec2:AttachInternetGateway\",\"ec2:AssociateRouteTable\",\"ec2:AssociateAddress\",\"ec2:AllocateAddress\"],\"Effect\":\"Allow\",\"Resource\":\"*\",\"Sid\":\"NetworkingAndCompute\"}]}",
+            "role": "gha-spoke-prod-deploy-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_openid_connect_provider.github",
+            "aws_iam_role.deploy",
+            "data.aws_iam_policy_document.assume_role",
+            "data.aws_iam_policy_document.network_common"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket",
+      "name": "tf_state",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "acceleration_status": "",
+            "acl": null,
+            "arn": "arn:aws:s3:::hub-spoke-tf-state-new",
+            "bucket": "hub-spoke-tf-state-new",
+            "bucket_domain_name": "hub-spoke-tf-state-new.s3.amazonaws.com",
+            "bucket_prefix": "",
+            "bucket_regional_domain_name": "hub-spoke-tf-state-new.s3.us-east-1.amazonaws.com",
+            "cors_rule": [],
+            "force_destroy": null,
+            "grant": [
+              {
+                "id": "c7bbdf9372d6f0985c797aee6588d27ae48057541dd8d3067123da72aca7f5f5",
+                "permissions": [
+                  "FULL_CONTROL"
+                ],
+                "type": "CanonicalUser",
+                "uri": ""
+              }
+            ],
+            "hosted_zone_id": "Z3AQBSTGFYJSTF",
+            "id": "hub-spoke-tf-state-new",
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "object_lock_enabled": false,
+            "policy": "",
+            "region": "us-east-1",
+            "replication_configuration": [],
+            "request_payer": "BucketOwner",
+            "server_side_encryption_configuration": [
+              {
+                "rule": [
+                  {
+                    "apply_server_side_encryption_by_default": [
+                      {
+                        "kms_master_key_id": "",
+                        "sse_algorithm": "AES256"
+                      }
+                    ],
+                    "bucket_key_enabled": false
+                  }
+                ]
+              }
+            ],
+            "tags": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "hub-spoke-tf-state-new",
+              "Project": "hub-spoke-network"
+            },
+            "tags_all": {
+              "Layer": "bootstrap",
+              "ManagedBy": "Terraform",
+              "Name": "hub-spoke-tf-state-new",
+              "Project": "hub-spoke-network"
+            },
+            "timeouts": null,
+            "versioning": [
+              {
+                "enabled": true,
+                "mfa_delete": false
+              }
+            ],
+            "website": [],
+            "website_domain": null,
+            "website_endpoint": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInJlYWQiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMCJ9"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_public_access_block",
+      "name": "tf_state",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "block_public_acls": true,
+            "block_public_policy": true,
+            "bucket": "hub-spoke-tf-state-new",
+            "id": "hub-spoke-tf-state-new",
+            "ignore_public_acls": true,
+            "restrict_public_buckets": true
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.tf_state"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_server_side_encryption_configuration",
+      "name": "tf_state",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "hub-spoke-tf-state-new",
+            "expected_bucket_owner": "",
+            "id": "hub-spoke-tf-state-new",
+            "rule": [
+              {
+                "apply_server_side_encryption_by_default": [
+                  {
+                    "kms_master_key_id": "",
+                    "sse_algorithm": "AES256"
+                  }
+                ],
+                "bucket_key_enabled": false
+              }
+            ]
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.tf_state"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_s3_bucket_versioning",
+      "name": "tf_state",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "bucket": "hub-spoke-tf-state-new",
+            "expected_bucket_owner": "",
+            "id": "hub-spoke-tf-state-new",
+            "mfa": null,
+            "versioning_configuration": [
+              {
+                "mfa_delete": "",
+                "status": "Enabled"
+              }
+            ]
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_s3_bucket.tf_state"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
