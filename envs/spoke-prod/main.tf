@@ -67,13 +67,21 @@ so I decided to go with bastion /24 subnet
   tags = merge(local.common_tags, { Name = "spoke-prod-app-sg" })
 }
 
+module "app_ssm" {
+  source = "../../modules/ssm_instance_role"
+  name   = "spoke-prod-app"
+  tags   = local.common_tags
+}
+
+
 resource "aws_instance" "app" {
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = "t3.micro"
   subnet_id                   = module.spoke_prod_vpc.private_subnet_ids[0]
   vpc_security_group_ids      = [aws_security_group.app.id]
   associate_public_ip_address = false
-  key_name                    = "hub-spoke-bastion"
+  key_name                    = var.key_pair_name
+  iam_instance_profile        = module.app_ssm.instance_profile_name
   tags                        = merge(local.common_tags, { Name = "spoke-prod-app" })
 
 }

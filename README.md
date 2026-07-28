@@ -49,6 +49,7 @@ This project implements a hub-and-spoke network architecture on AWS using Terraf
 | `modules/tgw` | Transit Gateway — attachments, route tables, associations, propagations |
 | `modules/dns` | Route 53 private hosted zone and spoke VPC associations |
 | `modules/flow_logs` | VPC Flow Logs to CloudWatch for all VPCs |
+| `modules/ssm_instance_role` | IAM role + instance profile that lets an EC2 instance register with SSM Session Manager |
 
 ---
 
@@ -95,6 +96,10 @@ I learned how to use multi-environment deployment. Each environment has a separa
 Creating defense in depth with VPCs that have only private subnets, only being able to communicate with each other via Transit Gateway in the Hub VPC. The spoke VPCs are completely private and can only be accessed via the bastion in the Hub VPC. I also learned how to deploy a Transit Gateway — route tables in each VPC are not enough. You also have to create route tables, associations, and the desired propagations in the TGW itself, as well as attachments.
 
 It was also great creating a private Route 53 hosted zone and seeing instances in different VPCs being able to communicate with each other using an A record instead of an IP address.
+
+### IAM and Access
+
+I added an instance profile module (`modules/ssm_instance_role`) so I could reach the bastion and both app instances through AWS Systems Manager Session Manager, not just SSH. This meant learning that a role isn't enough on its own — you have to wrap it in an instance profile before EC2 can actually use it, and only then does the instance get real, temporary credentials behind the scenes when it calls `sts:AssumeRole`. Attaching the AWS-managed `AmazonSSMManagedInstanceCore` policy was the easy part; understanding why that role/profile split exists took more digging than I expected.
 
 ### CI/CD
 
@@ -168,6 +173,14 @@ TGW solves this by acting like a router in the middle. Every VPC attaches to it 
 
 Each environment's GitHub Actions workflow assumes its own IAM role — `gha-hub-deploy-role`, `gha-spoke-dev-deploy-role`, `gha-spoke-prod-deploy-role` — instead of all three sharing one role. The permissions aren't identical: only the hub role gets Transit Gateway, Route 53, and CloudWatch Logs permissions, since only `envs/hub` calls the `tgw`, `dns`, and `flow_logs` modules. The spoke roles only get the plain VPC/EC2 permissions both spokes actually use. Each role's backend access is scoped the same way — every role can read and write its own state object, but only the hub role can also read the two spoke state objects, since that's the only environment using `terraform_remote_state` to reach them. A bug or a bad plan in the spoke-dev workflow literally cannot touch hub's TGW or prod's state, because the role it's running as was never given permission to.
 
+### Bastion + SSM Session Manager — keeping both on purpose
+
+I built this project with a traditional SSH bastion first, then added AWS Systems Manager Session Manager as a second way in, instead of replacing the bastion outright. AWS's own guidance leans toward SSM now — no open inbound port, no SSH key to lose or rotate, and every session gets logged to CloudTrail for free. I actually lost my own bastion key pair partway through building this and had to replace it, which made the case for SSM pretty concrete in a way no blog post could.
+
+But I kept the bastion and its supporting network path on purpose. It's the piece of this project that actually shows off the routing side of a hub-and-spoke design — the TGW attachments, the route table propagation into the public route table so the bastion can reach spoke CIDRs, the security group scoped to just my own IP via `allowed_ssh_cidr` (I set that value to a `/32` myself — Terraform doesn't enforce it, it just takes whatever CIDR you pass in), the DNS record that lets me reach it by name instead of memorizing an IP. If I ripped that out in favor of SSM, the project would lose the exact part that demonstrates I understand how traffic actually moves through this network, not just that I know how to hand an IAM role to an instance and let AWS handle the rest.
+
+So both paths run side by side on the same instances: SSH through the bastion (`modules/vpc`, `modules/tgw`, the hand-built routes in `envs/hub/main.tf`) to show the networking, and SSM through an instance profile (`modules/ssm_instance_role`) to show I also know the direction AWS is actually pushing production access toward. Same instances, two different ways in, each one demonstrating a different skill.
+
 ### OIDC instead of long-lived AWS access keys
 
 The alternative to OIDC here would be generating an IAM user access key and pasting it into a GitHub secret for each environment. That works, but it's a static credential that doesn't expire, and if it ever leaks it's valid until someone manually rotates it. With OIDC, each IAM role's trust policy checks the token GitHub issues for that specific workflow run — which repo it came from, and whether it was a pull request or a push to `main`. There's no credential sitting in GitHub at all; AWS is trusting a signed claim about the workflow run itself, and that trust is scoped per environment through the three separate roles.
@@ -226,6 +239,7 @@ The Deployment section below still says spokes have to exist before hub, since h
 - AWS CLI configured with appropriate credentials (only needed locally to run `bootstrap` once — the pipeline uses OIDC afterward)
 - Terraform >= 1.5.0
 - An existing EC2 Key Pair in your AWS account
+- [Session Manager plugin for the AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) — only needed if you want to use the SSM connection path instead of SSH
 - A GitHub repo with Actions enabled, if you want to use the CI/CD pipeline instead of applying locally
 - S3 bucket, DynamoDB table, OIDC provider, and IAM roles for remote state and CI/CD (see Bootstrap section)
 
@@ -331,6 +345,16 @@ Test internet egress via NAT:
 curl https://checkip.amazonaws.com
 # Should return NAT Gateway IP, not bastion IP
 ```
+
+### Connecting without SSH (Session Manager)
+
+Every instance in this project also carries an IAM instance profile from `modules/ssm_instance_role`, so you can skip SSH and the bastion entirely:
+
+```bash
+aws ssm start-session --target $(terraform output -raw bastion_instance_id)
+```
+
+The same works against an app instance directly, using the `app_instance_id` output from `envs/spoke-dev` or `envs/spoke-prod` — no bastion hop, no key pair, no `/32` security group rule required for this path. Requires the Session Manager plugin for the AWS CLI installed locally.
 
 ---
 

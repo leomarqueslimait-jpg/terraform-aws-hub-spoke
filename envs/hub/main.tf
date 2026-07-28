@@ -175,6 +175,12 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+module "bastion_ssm" {
+  source = "../../modules/ssm_instance_role"
+  name   = "hub-bastion"
+  tags   = local.common_tags
+}
+
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = "t3.micro"
@@ -182,6 +188,7 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids      = [aws_security_group.bastion.id]
   associate_public_ip_address = true
   key_name                    = var.key_pair_name
+  iam_instance_profile        = module.bastion_ssm.instance_profile_name
 
   tags = merge(local.common_tags, { Name = "hub-bastion" })
 }

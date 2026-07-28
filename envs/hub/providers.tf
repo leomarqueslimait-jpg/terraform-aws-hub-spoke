@@ -11,11 +11,11 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "hub-spoke-tf-state-new"
-    key            = "hub/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "tf-state-lock"
-    encrypt        = true
+    bucket       = "hub-spoke-tf-state-new"
+    key          = "hub/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
+    encrypt      = true
   }
 }
 provider "aws" {
