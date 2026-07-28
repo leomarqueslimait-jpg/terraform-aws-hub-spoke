@@ -22,3 +22,8 @@ output "app_private_ip" {
   description = "Private IP of the spoke-prod app instance"
   value       = aws_instance.app.private_ip
 }
+
+output "app_instance_id" {
+  description = "Spoke-prod app instance ID - use this as the --target for aws ssm start-session"
+  value       = aws_instance.app.id
+}

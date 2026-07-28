@@ -33,3 +33,8 @@ output "private_zone_id" {
   value       = module.dns.private_zone_id
 }
 
+output "bastion_instance_id" {
+  description = "Bastion instance ID - use this as the --target for aws ssm start-session"
+  value       = aws_instance.bastion.id
+}
+
