@@ -4,7 +4,7 @@
 *.tfvars
 crash.log
 import.tf
-
+session-manager-plugin.deb
 # Terraform plan output — can contain the same sensitive state contents as
 # .tfstate. Added once the bootstrap layer made local `terraform plan -out=`
 # runs a normal part of the workflow (every other env applies straight
