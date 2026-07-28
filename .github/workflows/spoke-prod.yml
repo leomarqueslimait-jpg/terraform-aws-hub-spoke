@@ -26,7 +26,8 @@ jobs:
     with:
       environment: spoke-prod
       working_directory: envs/spoke-prod
+    secrets:
       role_arn: ${{ secrets.SPOKE_PROD_DEPLOY_ROLE_ARN }}
     # SPOKE_PROD_DEPLOY_ROLE_ARN comes from bootstrap's
     # `deploy_role_arns["spoke-prod"]` output. Set it under Settings >
-    # Secrets and variables > Actions > Variables.
+    # Secrets and variables > Actions > Secrets.

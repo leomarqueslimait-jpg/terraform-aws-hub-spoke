@@ -32,9 +32,8 @@ jobs:
     with:
       environment: hub
       working_directory: envs/hub
+    secrets:
       role_arn: ${{ secrets.HUB_DEPLOY_ROLE_ARN }}
     # HUB_DEPLOY_ROLE_ARN comes from bootstrap's `deploy_role_arns["hub"]`
     # output. Set it under Settings > Secrets and variables > Actions >
-    # Variables (repository variable, not a secret — an IAM role ARN isn't
-    # sensitive on its own; the OIDC trust policy is what actually gates
-    # who can assume it).
+    # Secrets.
