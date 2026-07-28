@@ -24,3 +24,4 @@ tfplan
 **/readme.meoverride.tf
 override.tf.json
 .terraformrc
+*.deb
