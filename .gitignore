@@ -11,6 +11,7 @@ session-manager-plugin.deb
 # through an S3 backend, so this wasn't a risk before).
 *.tfplan
 tfplan
+terraform.tfstate.*.backup
 
 # Personal study notes — ignored everywhere in project
 **/DNS-RESOURCES.md
