@@ -1,5 +1,6 @@
 *.tfstate
 *.tfstate.backup
+terraform.tfstate.*.backup
 .terraform/
 *.tfvars
 crash.log
@@ -11,18 +12,4 @@ session-manager-plugin.deb
 # through an S3 backend, so this wasn't a risk before).
 *.tfplan
 tfplan
-terraform.tfstate.*.backup
-
-# Personal study notes — ignored everywhere in project
-**/DNS-RESOURCES.md
-**/TGW_RESOURCES.md
-**/FLOW-LOGS-RESOURCES.md
-**/explanation.md
-**/dns_module_overview.md
-**/dns-resources-explained.md
-**/FLOW-LOGS-RESOURCES.md
-**/iam_role_explanation.md
-**/readme.meoverride.tf
-override.tf.json
-.terraformrc
-*.deb
+ 
