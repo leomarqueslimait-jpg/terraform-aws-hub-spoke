@@ -29,7 +29,7 @@ module "tgw" {
   source = "../../modules/tgw"
   name   = "hub-spoke"
 
- 
+
   attachments = merge(
     {
       hub = {

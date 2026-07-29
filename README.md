@@ -21,9 +21,6 @@ This project implements a hub-and-spoke network architecture on AWS using Terraf
                     │  ┌─────────────────▼──────────────┐    │
                     │  │         NAT Gateway             │    │
                     │  └─────────────────────────────────┘    │
-                    │                                         │
-                    │  Route 53 Private Zone                  │
-                    │  internal.example.com                   │
                     └──────────────┬──────────────────────────┘
                                    │
                         ┌──────────▼──────────┐
@@ -37,6 +34,15 @@ This project implements a hub-and-spoke network architecture on AWS using Terraf
            │  Private subnets │    │  Private subnets   │
            │  App EC2         │    │  App EC2           │
            └──────────────────┘    └────────────────────┘
+
+     ┌────────────────────────────┐   ┌────────────────────────────┐
+     │   Route 53 Private Zone    │   │      CloudWatch Logs       │
+     │    internal.example.com    │   │      (VPC Flow Logs)       │
+     │                            │   │                            │
+     │   Not part of any VPC —    │   │   Not part of any VPC —    │
+     │   associated with all 3    │   │  receives flow logs from   │
+     │   (Hub, Spoke Dev, Prod)   │   │         all 3 VPCs         │
+     └────────────────────────────┘   └────────────────────────────┘
 ```
 
 ---
@@ -64,23 +70,11 @@ This project implements a hub-and-spoke network architecture on AWS using Terraf
 
 ---
 
-## Skills Learned
-
-- Multi-environment Terraform with isolated state per environment (S3 backend, one state file each) and explicit cross-environment reads via `terraform_remote_state` where hub needs spoke outputs.
-- Transit Gateway routing beyond the default VPC route table — attachments, TGW-level route tables, associations, and propagations, deliberately disabling the default association/propagation behavior to enforce spoke isolation.
-- IAM role/instance-profile separation for SSM Session Manager access (`modules/ssm_instance_role`), alongside a traditional SSH bastion.
-
----
-
 ## Biggest Challenge
 
-One of the biggest challenges was dealing with resources that Terraform does not always destroy cleanly, such as CloudWatch Log Groups and Route 53 hosted zones. This can make redeployments messy — the resource still exists in AWS but Terraform has no record of it in state, so it tries to create it again and fails. You have to either import the existing resource into Terraform state, or delete it manually through the AWS Console or CLI before reapplying.
+One of the biggest challenges was dealing with resources that Terraform does not always destroy cleanly, such as CloudWatch Log Groups and Route 53 hosted zones. This can make redeployments messy — the resource still exists in AWS but Terraform has no record of it in state, so it tries to create it again and fails. You have to either import the existing resource into Terraform state, either via the terminal or via an import block, or delete it manually through the AWS Console or CLI before reapplying.
 
----
-
-## Intended Audience
-
-This project is intended to show some of my networking skills and architecture capabilities. It is aimed at roles such as Cloud Engineer, Solutions Architect, or DevOps Engineer where understanding how to design and deploy secure, scalable network infrastructure on AWS is important. I wanted to demonstrate that I can not only deploy individual resources, but also think about how they connect to each other, why certain design decisions are made, and how to organize infrastructure as reusable code that can scale as the project grows.
+The reverse problem — a resource that's real and still needed, but shouldn't be managed by this config anymore — comes up too. `moved` blocks rename a resource's state address without touching the real infrastructure (used when refactoring `aws_route53_record` into a `for_each`); `removed` blocks drop a resource from state entirely while explicitly choosing whether to destroy it (used to stop managing the shared DynamoDB lock table without deleting it).
 
 ---
 
@@ -144,7 +138,7 @@ So both paths run side by side on the same instances: SSH through the bastion (`
 
 ### Removing the DynamoDB lock table with a `removed` block
 
-`bootstrap` originally created a DynamoDB table for state locking, since superseded by S3-native locking (`use_lockfile = true` in every `providers.tf`), which left the table created but unused. Removed it with a `removed` block (`destroy = false`) instead of `terraform state rm`, so the removal showed up in `terraform plan` before being applied, rather than only existing as a command run once in a terminal.
+`bootstrap` originally created a DynamoDB table for state locking, since superseded by S3-native locking (`use_lockfile = true` in every `providers.tf`), which left the table created but unused by this project. I didn't want to actually destroy it, though — other projects in the same AWS account haven't been updated to the new locking approach yet and still use this same table for their own state locking. Removed it with a `removed` block (`destroy = false`) instead of `terraform state rm`, so the removal showed up in `terraform plan` before being applied, rather than only existing as a command run once in a terminal.
 
 ---
 
@@ -182,7 +176,7 @@ So both paths run side by side on the same instances: SSH through the bastion (`
 ## Prerequisites
 
 - AWS CLI configured with appropriate credentials
-- Terraform >= 1.10 (needs S3-native state locking via `use_lockfile`; the `removed` block used in `bootstrap` needs >= 1.7 — every `providers.tf` pins `~> 1.15.8`, well above both)
+- Terraform ~> 1.15.8 (pinned in every `providers.tf`)
 - An existing EC2 Key Pair in your AWS account
 - [Session Manager plugin for the AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) — only needed if you want to use the SSM connection path instead of SSH
 - S3 bucket for remote state (see Bootstrap section)
