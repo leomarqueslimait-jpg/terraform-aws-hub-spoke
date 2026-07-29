@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a hub-and-spoke network architecture on AWS using Terraform reusable modules for scalability. It consists of a Hub VPC and two spoke VPCs — one for production and one for development. Spoke VPCs contain only private subnets and have no direct internet access. The Hub VPC centralizes shared services: a NAT Gateway for outbound internet access, a Transit Gateway to connect all VPCs without VPC peering, a Route 53 private hosted zone for internal DNS resolution, and a bastion host as the single secure entry point to access private instances across spoke VPCs.
+This project implements a hub-and-spoke network architecture on AWS using Terraform reusable modules for scalability. It consists of a Hub VPC and two spoke VPCs — one for production and one for development. Spoke VPCs contain only private subnets and have no direct internet access. The Hub VPC itself hosts a NAT Gateway for outbound internet access and a bastion host as the single secure entry point into private instances across the spoke VPCs. The hub environment also provisions the resources that aren't scoped to any single VPC: a Transit Gateway connecting all three VPCs without VPC peering, a Route 53 private hosted zone associated with all three VPCs for internal DNS resolution, and CloudWatch Log Groups receiving VPC Flow Logs from all three VPCs.
 
 ---
 

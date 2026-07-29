@@ -45,7 +45,7 @@ module "tgw" {
     }
   )
 
-  spoke_cidrs                = [for env, state in data.data.terraform_remote_state.spokes : state.output.vpc_cidr]
+  spoke_cidrs                = [for env, state in data.terraform_remote_state.spokes : state.outputs.vpc_cidr]
   hub_private_route_table_id = module.hub_vpc.private_route_table_id
 
   spoke_route_table_ids = {
